@@ -1,0 +1,556 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body,div,span,p,td,th{font-family:var(--font-sans,sans-serif)}
+.mono{font-family:'DM Mono',ui-monospace,monospace!important}
+
+.scl-top{background:#1a1a2e;border-radius:10px;padding:14px 18px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.scl-brand{color:#7eb8f7;font-size:13px;font-weight:500;font-family:'DM Mono',ui-monospace,monospace;letter-spacing:.4px}
+.kpis{display:flex;gap:16px;flex-wrap:wrap}
+.kpi{text-align:center}
+.kpi-v{font-size:18px;font-weight:700;font-family:'DM Mono',ui-monospace,monospace;line-height:1;color:#fff}
+.kpi-l{font-size:9px;color:rgba(255,255,255,.38);margin-top:2px;font-family:'DM Mono',ui-monospace,monospace;white-space:nowrap}
+
+.tabs{display:flex;gap:4px;margin-bottom:12px;border-bottom:.5px solid var(--color-border-tertiary);padding-bottom:0}
+.tab{padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;border-radius:6px 6px 0 0;border:.5px solid transparent;border-bottom:none;color:var(--color-text-secondary);background:transparent;transition:all .15s;margin-bottom:-1px}
+.tab.active{background:var(--color-background-primary);border-color:var(--color-border-tertiary);color:var(--color-text-primary)}
+.tab:hover:not(.active){background:var(--color-background-secondary)}
+
+.filters{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.filters input{flex:1;min-width:140px;padding:6px 10px;border:.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--color-background-primary);color:var(--color-text-primary);font-size:12px;font-family:'DM Mono',ui-monospace,monospace;outline:none}
+.filters input:focus{border-color:var(--color-border-primary)}
+.filters select{padding:6px 10px;border:.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--color-background-primary);color:var(--color-text-primary);font-size:11px;font-family:'DM Mono',ui-monospace,monospace;outline:none;cursor:pointer}
+.fc{font-size:11px;color:var(--color-text-tertiary);font-family:'DM Mono',ui-monospace,monospace;white-space:nowrap;margin-left:auto}
+
+.tbl-wrap{border:.5px solid var(--color-border-tertiary);border-radius:9px;overflow:hidden;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{padding:8px 10px;text-align:left;font-size:9px;font-weight:500;color:var(--color-text-tertiary);font-family:'DM Mono',ui-monospace,monospace;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.4px;text-transform:uppercase}
+tbody tr{border-bottom:.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--color-background-secondary)}
+tbody tr.sel{background:var(--color-background-secondary)}
+td{padding:8px 10px;font-size:11px;color:var(--color-text-secondary);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cid{font-family:'DM Mono',ui-monospace,monospace;font-weight:600;color:var(--color-text-primary);font-size:10px}
+.cname{color:var(--color-text-primary);font-weight:500;white-space:normal;line-height:1.3;font-size:11px}
+
+.col-id{width:80px}.col-name{width:auto}.col-type{width:82px}.col-dom{width:92px}
+.col-mat{width:86px}.col-risk{width:76px}.col-crit{width:74px}.col-aud{width:78px}.col-sta{width:66px}
+
+.badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:600;font-family:'DM Mono',ui-monospace,monospace;white-space:nowrap}
+.s-pass{background:var(--color-background-success);color:var(--color-text-success)}
+.s-fail{background:var(--color-background-danger);color:var(--color-text-danger)}
+.s-warn{background:var(--color-background-warning);color:var(--color-text-warning)}
+.s-na{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+
+.aud-ready{background:rgba(34,197,94,.1);color:#27500A;border:.5px solid rgba(34,197,94,.3)}
+.aud-partial{background:rgba(234,179,8,.1);color:#633806;border:.5px solid rgba(234,179,8,.3)}
+.aud-notready{background:rgba(239,68,68,.1);color:#A32D2D;border:.5px solid rgba(239,68,68,.3)}
+
+.crit-crit{background:rgba(239,68,68,.1);color:#A32D2D}
+.crit-high{background:rgba(249,115,22,.1);color:#854F0B}
+.crit-med{background:rgba(234,179,8,.1);color:#633806}
+.crit-low{background:rgba(34,197,94,.1);color:#27500A}
+
+.type-prev{background:rgba(127,119,221,.1);color:#3C3489}
+.type-det{background:rgba(55,138,221,.1);color:#0C447C}
+.type-corr{background:rgba(29,158,117,.1);color:#085041}
+.type-comp{background:rgba(136,135,128,.1);color:#444441}
+
+.mat-segs{display:flex;gap:2px}
+.mat-seg{width:10px;height:10px;border-radius:2px}
+
+.risk-ring{display:inline-flex;align-items:center;gap:5px}
+.risk-num{font-size:12px;font-weight:700;font-family:'DM Mono',ui-monospace,monospace}
+
+.exp-row td{padding:0!important;background:var(--color-background-secondary)}
+.exp-inner{padding:14px 16px;border-top:.5px solid var(--color-border-tertiary)}
+
+.exp-top{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.ecard{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:6px;padding:9px 11px}
+.elbl{font-size:9px;color:var(--color-text-tertiary);font-family:'DM Mono',ui-monospace,monospace;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+.eval{font-size:12px;color:var(--color-text-primary);line-height:1.35}
+
+.risk-detail{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:6px;padding:10px 12px;margin-bottom:8px}
+.risk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.rg-cell{border-radius:5px;padding:8px 10px}
+.rg-lbl{font-size:9px;font-family:'DM Mono',ui-monospace,monospace;font-weight:600;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+.rg-val{font-size:13px;font-weight:700;font-family:'DM Mono',ui-monospace,monospace}
+.rg-sub{font-size:10px;margin-top:2px}
+
+.evid-section{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:6px;padding:10px 12px;margin-bottom:8px}
+.evid-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.5px solid var(--color-border-tertiary)}
+.evid-row:last-child{border-bottom:none}
+.evid-icon{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;font-family:'DM Mono',ui-monospace,monospace}
+.ei-auto{background:rgba(34,197,94,.12);color:#27500A}
+.ei-man{background:rgba(55,138,221,.12);color:#0C447C}
+.ei-pend{background:rgba(234,179,8,.12);color:#633806}
+.ei-fail{background:rgba(239,68,68,.12);color:#A32D2D}
+.evid-name{font-size:11px;font-weight:500;flex:1;color:var(--color-text-primary)}
+.evid-meta{font-size:10px;color:var(--color-text-tertiary);font-family:'DM Mono',ui-monospace,monospace}
+.evid-age{font-size:10px;color:var(--color-text-tertiary);font-family:'DM Mono',ui-monospace,monospace;white-space:nowrap}
+
+.mat-detail{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:6px;padding:10px 12px;margin-bottom:8px}
+.mat-levels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin-top:8px}
+.mat-lv{border-radius:5px;padding:7px 9px;border:.5px solid transparent}
+.mat-lv-num{font-size:9px;font-weight:700;font-family:'DM Mono',ui-monospace,monospace;margin-bottom:2px;text-transform:uppercase}
+.mat-lv-name{font-size:10px;font-weight:500;margin-bottom:3px}
+.mat-lv-desc{font-size:10px;line-height:1.35}
+.mat-lv.cur{border-width:1.5px}
+
+.aud-detail{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:6px;padding:10px 12px;margin-bottom:8px}
+.aud-checks{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.aud-check{display:flex;align-items:center;gap:8px;font-size:11px}
+.aud-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.sec-title{font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:0}
+
+.exp-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.sbtn{display:inline-flex;align-items:center;gap:3px;padding:5px 9px;border-radius:5px;font-size:10px;font-family:'DM Mono',ui-monospace,monospace;border:.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:background .12s}
+.sbtn:hover{background:var(--color-background-secondary)}
+
+.fw-tag{padding:1px 4px;border-radius:3px;font-size:9px;font-weight:600;font-family:'DM Mono',ui-monospace,monospace}
+.ft-b{background:var(--color-background-info);color:var(--color-text-info)}
+.ft-g{background:var(--color-background-success);color:var(--color-text-success)}
+.ft-a{background:var(--color-background-warning);color:var(--color-text-warning)}
+.ft-p{background:rgba(127,119,221,.15);color:#3C3489}
+.ft-c{background:rgba(216,90,48,.15);color:#712B13}
+
+/* ROADMAP TAB */
+.rmap{display:flex;flex-direction:column;gap:10px}
+.rmap-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.ph-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--color-background-secondary);border-radius:7px;border:.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .12s}
+.ph-header:hover{background:var(--color-background-primary)}
+.ph-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:'DM Mono',ui-monospace,monospace;flex-shrink:0}
+.ph-title{font-size:13px;font-weight:500;flex:1}
+.ph-meta{font-size:11px;color:var(--color-text-tertiary);font-family:'DM Mono',ui-monospace,monospace}
+.ph-body{border:.5px solid var(--color-border-tertiary);border-radius:0 0 7px 7px;border-top:none;overflow:hidden}
+.rm-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:.5px solid var(--color-border-tertiary)}
+.rm-item:last-child{border-bottom:none}
+.rm-item:hover{background:var(--color-background-secondary)}
+.rm-left{width:70px;flex-shrink:0}
+.rm-id{font-size:10px;font-weight:600;font-family:'DM Mono',ui-monospace,monospace;color:var(--color-text-primary)}
+.rm-from-to{display:flex;align-items:center;gap:3px;margin-top:3px}
+.rm-arr{font-size:10px;color:var(--color-text-tertiary)}
+.rm-body{flex:1}
+.rm-name{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.rm-desc{font-size:11px;color:var(--color-text-secondary);line-height:1.4}
+.rm-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;min-width:80px}
+.rm-effort{font-size:10px;color:var(--color-text-tertiary);font-family:'DM Mono',ui-monospace,monospace}
+
+.rmap-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.rs-card{background:var(--color-background-secondary);border-radius:7px;padding:10px 12px;text-align:center}
+.rs-v{font-size:20px;font-weight:700;font-family:'DM Mono',ui-monospace,monospace;line-height:1}
+.rs-l{font-size:10px;color:var(--color-text-tertiary);margin-top:3px;font-family:'DM Mono',ui-monospace,monospace}
+
+.prog-bar{height:5px;background:var(--color-background-secondary);border-radius:3px;margin-top:6px;overflow:hidden}
+.prog-fill{height:5px;border-radius:3px}
+
+.global-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+
+/* Health Score */
+.hs-ring{display:inline-flex;align-items:center;gap:4px}
+.hs-val{font-size:12px;font-weight:700;font-family:'DM Mono',ui-monospace,monospace}
+.hs-bar{width:36px;height:5px;border-radius:3px;background:var(--color-background-tertiary);overflow:hidden;display:inline-block}
+.hs-fill{height:5px;border-radius:3px}
+.col-hs{width:88px}
+
+/* Residual Risk */
+.rr-pill{display:inline-flex;align-items:center;gap:3px;padding:2px 5px;border-radius:4px;font-size:9px;font-weight:700;font-family:'DM Mono',ui-monospace,monospace}
+.col-rr{width:74px}
+
+/* Owner column */
+.col-own{width:80px}
+
+/* Framework column */
+.col-fw{width:120px}
+.col-fw .fw-tag{margin-right:2px}
+
+/* Coverage KPI bar */
+.cov-kpi{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:110px}
+.cov-lbl{font-size:9px;color:rgba(255,255,255,.38);font-family:'DM Mono',ui-monospace,monospace;letter-spacing:.4px}
+.cov-bar-wrap{width:100%;height:5px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
+.cov-bar-fill{height:5px;border-radius:3px;transition:width .4s ease}
+
+/* Health score section in expand */
+.hs-detail{background:var(--color-background-primary);border:.5px solid var(--color-border-tertiary);border-radius:6px;padding:10px 12px;margin-bottom:8px}
+.hs-breakdown{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
+.hs-factor{border-radius:5px;padding:7px 9px;text-align:center}
+.hs-f-lbl{font-size:9px;font-family:'DM Mono',ui-monospace,monospace;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.hs-f-val{font-size:16px;font-weight:700;font-family:'DM Mono',ui-monospace,monospace}
+.hs-f-sub{font-size:9px;margin-top:2px}
+</style>
+
+<div>
+<div class="scl-top">
+  <div class="scl-brand">GovEx / Security Control Library v2</div>
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-v" id="kpi-t">48</div><div class="kpi-l">Controls</div></div>
+    <div class="kpi"><div class="kpi-v" style="color:#4ade80" id="kpi-p">31</div><div class="kpi-l">Passing</div></div>
+    <div class="kpi"><div class="kpi-v" style="color:#f87171" id="kpi-f">9</div><div class="kpi-l">Failing</div></div>
+    <div class="kpi"><div class="kpi-v" style="color:#facc15" id="kpi-w">8</div><div class="kpi-l">Warning</div></div>
+    <div class="kpi"><div class="kpi-v" style="color:#c084fc" id="kpi-m">3.1</div><div class="kpi-l">Avg maturity</div></div>
+    <div class="kpi"><div class="kpi-v" style="color:#fb923c" id="kpi-r">14.2</div><div class="kpi-l">Avg risk score</div></div>
+    <div class="kpi"><div class="kpi-v" style="color:#4ade80" id="kpi-a">67%</div><div class="kpi-l">Audit ready</div></div>
+    <div class="kpi"><div class="kpi-v" style="color:#7eb8f7" id="kpi-hs">72</div><div class="kpi-l">Avg health score</div></div>
+    <div class="kpi"><div class="kpi-v" style="color:#c084fc" id="kpi-rr">9.1</div><div class="kpi-l">Avg residual risk</div></div>
+    <div class="cov-kpi">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:baseline"><span class="cov-lbl">CONTROL COVERAGE</span><span class="kpi-v" style="font-size:13px;margin-left:8px" id="kpi-cov">0%</span></div>
+      <div class="cov-bar-wrap" style="width:140px"><div class="cov-bar-fill" id="cov-bar-fill" style="background:#4ade80;width:0%"></div></div>
+      <div class="cov-lbl" id="kpi-cov-sub">0 domains covered</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="tab-catalog" onclick="switchTab('catalog')">Control catalog</div>
+  <div class="tab" id="tab-roadmap" onclick="switchTab('roadmap')">Remediation roadmap</div>
+</div>
+
+<div id="view-catalog">
+<div class="filters">
+  <input type="text" id="search" placeholder="Search ID, name, owner..." oninput="render()">
+  <select id="sel-dom" onchange="render()"><option value="">All domains</option><option>Identity &amp; Access</option><option>Data Protection</option><option>Vulnerability Mgmt</option><option>Incident Response</option><option>Change Management</option><option>Business Continuity</option><option>Network Security</option><option>Third-party Security</option></select>
+  <select id="sel-sta" onchange="render()"><option value="">All statuses</option><option>Pass</option><option>Fail</option><option>Warning</option></select>
+  <select id="sel-type" onchange="render()"><option value="">All types</option><option>Preventive</option><option>Detective</option><option>Corrective</option><option>Compensating</option></select>
+  <select id="sel-crit" onchange="render()"><option value="">All criticality</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
+  <select id="sel-aud" onchange="render()"><option value="">Audit readiness</option><option>Ready</option><option>Partial</option><option>Not ready</option></select>
+  <select id="sel-fw" onchange="render()"><option value="">All frameworks</option><option>SOC2</option><option>ISO</option><option>NIST</option><option>PCI</option><option>GDPR</option><option>HIPAA</option></select>
+  <select id="sel-own" onchange="render()"><option value="">All owners</option><option>K. Osei</option><option>A. Chen</option><option>M. Tran</option><option>L. Park</option><option>R. Singh</option><option>CISO</option><option>HR</option></select>
+  <span class="fc" id="fc"></span>
+</div>
+<div class="tbl-wrap">
+<table>
+<thead><tr>
+  <th class="col-id">ID</th>
+  <th class="col-name">Control name</th>
+  <th class="col-type">Type</th>
+  <th class="col-dom">Domain</th>
+  <th class="col-own">Owner</th>
+  <th class="col-fw">Frameworks</th>
+  <th class="col-mat">Maturity</th>
+  <th class="col-risk">Risk score</th>
+  <th class="col-rr">Residual risk</th>
+  <th class="col-hs">Health score</th>
+  <th class="col-crit">Criticality</th>
+  <th class="col-aud">Audit ready</th>
+  <th class="col-sta">Status</th>
+</tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+</div>
+
+<div id="view-roadmap" style="display:none">
+<div class="rmap-summary">
+  <div class="rs-card"><div class="rs-v" style="color:#f87171" id="rm-open">17</div><div class="rs-l">Controls to remediate</div></div>
+  <div class="rs-card"><div class="rs-v" style="color:#4ade80" id="rm-q1">6</div><div class="rs-l">Phase 1 (0–30 d)</div></div>
+  <div class="rs-card"><div class="rs-v" style="color:#facc15" id="rm-q2">7</div><div class="rs-l">Phase 2 (31–90 d)</div></div>
+  <div class="rs-card"><div class="rs-v" style="color:#7eb8f7" id="rm-q3">4</div><div class="rs-l">Phase 3 (91–180 d)</div></div>
+</div>
+<div class="rmap" id="rmap-body"></div>
+</div>
+
+<div class="global-btns">
+  <button class="sbtn" onclick="sendPrompt('Which failing controls have the highest risk scores and need immediate remediation?')">Top risk priorities ↗</button>
+  <button class="sbtn" onclick="sendPrompt('Generate a maturity improvement roadmap targeting all L1 and L2 controls')">Maturity uplift plan ↗</button>
+  <button class="sbtn" onclick="sendPrompt('What evidence gaps are blocking our SOC 2 audit readiness?')">SOC 2 audit gaps ↗</button>
+  <button class="sbtn" onclick="sendPrompt('Produce an executive summary of our current control posture and top 5 risks')">Executive summary ↗</button>
+</div>
+</div>
+
+<script>
+var MN=['','Initial','Developing','Defined','Managed','Optimising'];
+var MF=['','#E24B4A','#fb923c','#facc15','#4ade80','#7F77DD'];
+var MB=['','rgba(239,68,68,.1)','rgba(249,115,22,.1)','rgba(234,179,8,.1)','rgba(34,197,94,.1)','rgba(127,119,221,.1)'];
+var MBD=['','rgba(239,68,68,.35)','rgba(249,115,22,.35)','rgba(234,179,8,.35)','rgba(34,197,94,.35)','rgba(127,119,221,.35)'];
+var MTC=['','#A32D2D','#854F0B','#633806','#27500A','#3C3489'];
+var MD=['','Ad-hoc, undocumented. Individual-dependent. High failure risk.','Documented but inconsistently applied. Partial tooling. Evidence gaps.','Standardised, consistently implemented. Formally approved policy.','Measured with KPIs. Evidence continuously collected. Dashboarded.','Continuously improved. Automated testing. Predictive risk management.'];
+
+var C=[
+  {id:'CTRL-0001',name:'MFA on privileged accounts',domain:'Identity & Access',mat:2,fw:['SOC2','PCI','HIPAA'],status:'Fail',owner:'K. Osei',tested:'01 Apr 2026',freq:'Continuous',evid:'Okta SCIM',scope:'All prod IAM',type:'Preventive',crit:'Critical',risk:20,riskL:4,riskI:5,aud:'Not ready',audChecks:[{ok:false,t:'Policy documented'},{ok:false,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'MFA enforced for all admin/elevated accounts across production systems.',evidence:[{icon:'ei-fail',lbl:'A',name:'Okta MFA enforcement report',meta:'Auto · Okta SCIM',age:'Fail — 3 accounts non-compliant'},{icon:'ei-pend',lbl:'!',name:'Privileged account roster',meta:'Manual required · K. Osei',age:'Due 08 Apr'}],remediation:'Enforce MFA policy in Okta for all admin groups. Enable conditional access policy. Verify coverage via SCIM report.',effort:'Medium',phase:1},
+  {id:'CTRL-0002',name:'Least-privilege provisioning',domain:'Identity & Access',mat:3,fw:['SOC2','ISO','NIST'],status:'Warning',owner:'K. Osei',tested:'28 Mar 2026',freq:'Quarterly',evid:'Okta access review',scope:'All users',type:'Preventive',crit:'High',risk:15,riskL:3,riskI:5,aud:'Partial',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'Users provisioned with minimum permissions for their role. Access reviewed quarterly.',evidence:[{icon:'ei-auto',lbl:'A',name:'Access review campaign results',meta:'Auto · Okta',age:'28 Mar'},{icon:'ei-pend',lbl:'!',name:'Q1 over-privileged role remediation',meta:'Manual · K. Osei',age:'In progress'}],remediation:'Complete quarterly access review. Revoke stale permissions. Document exceptions with CISO approval.',effort:'Low',phase:1},
+  {id:'CTRL-0003',name:'Access deprovisioning — leavers',domain:'Identity & Access',mat:4,fw:['SOC2','ISO','GDPR'],status:'Pass',owner:'K. Osei',tested:'02 Apr 2026',freq:'Event-driven',evid:'Workday + Okta',scope:'All employees',type:'Preventive',crit:'High',risk:8,riskL:2,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'Accounts disabled within 24h of termination. SCIM sync from HR triggers revocation.',evidence:[{icon:'ei-auto',lbl:'A',name:'Leaver termination log',meta:'Auto · Workday + Okta',age:'2h ago'},{icon:'ei-auto',lbl:'A',name:'24h SLA compliance report',meta:'Auto · monthly',age:'01 Apr'}],remediation:'No remediation required — control passing.',effort:'None',phase:0},
+  {id:'CTRL-0004',name:'Privileged access quarterly review',domain:'Identity & Access',mat:3,fw:['SOC2','ISO'],status:'Pass',owner:'K. Osei',tested:'15 Mar 2026',freq:'Quarterly',evid:'Okta reports',scope:'Admins only',type:'Detective',crit:'High',risk:10,riskL:2,riskI:5,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'Quarterly certification of privileged roles. Non-certified access auto-revoked.',evidence:[{icon:'ei-auto',lbl:'A',name:'Q1 2026 certification campaign',meta:'Auto · Okta',age:'15 Mar'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0005',name:'Session timeout enforcement',domain:'Identity & Access',mat:4,fw:['SOC2','HIPAA'],status:'Pass',owner:'K. Osei',tested:'01 Apr 2026',freq:'Continuous',evid:'Okta policy config',scope:'All users',type:'Preventive',crit:'Medium',risk:6,riskL:2,riskI:3,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'Idle sessions terminated after 15 min for privileged, 60 min for standard users.',evidence:[{icon:'ei-auto',lbl:'A',name:'Okta session policy config',meta:'Auto · Okta',age:'01 Apr'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0006',name:'Encryption at rest (AES-256)',domain:'Data Protection',mat:5,fw:['SOC2','ISO','GDPR','NIST'],status:'Pass',owner:'A. Chen',tested:'02 Apr 2026',freq:'Continuous',evid:'CloudTrail + KMS',scope:'All data stores',type:'Preventive',crit:'Critical',risk:4,riskL:1,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'All data at rest encrypted using AES-256. Managed via AWS KMS with CMK rotation annually.',evidence:[{icon:'ei-auto',lbl:'A',name:'KMS encryption audit log',meta:'Auto · AWS CloudTrail',age:'02 Apr'},{icon:'ei-auto',lbl:'A',name:'CMK rotation certificate',meta:'Auto · KMS',age:'01 Jan 2026'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0007',name:'Encryption in transit (TLS 1.3)',domain:'Data Protection',mat:5,fw:['SOC2','PCI','ISO'],status:'Pass',owner:'A. Chen',tested:'02 Apr 2026',freq:'Continuous',evid:'SSL Labs scan',scope:'All endpoints',type:'Preventive',crit:'Critical',risk:4,riskL:1,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'All traffic encrypted via TLS 1.3. TLS 1.0/1.1 disabled.',evidence:[{icon:'ei-auto',lbl:'A',name:'SSL Labs scan results',meta:'Auto · weekly',age:'01 Apr'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0008',name:'Data classification labelling',domain:'Data Protection',mat:2,fw:['SOC2','ISO','GDPR'],status:'Fail',owner:'A. Chen',tested:'20 Mar 2026',freq:'Annual + on change',evid:'Manual audit',scope:'All data assets',type:'Preventive',crit:'High',risk:16,riskL:4,riskI:4,aud:'Not ready',audChecks:[{ok:true,t:'Policy documented'},{ok:false,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'All data assets classified per sensitivity tiers (Public / Internal / Confidential / Restricted).',evidence:[{icon:'ei-pend',lbl:'!',name:'Data classification audit',meta:'Manual required · A. Chen',age:'Overdue 13d'},{icon:'ei-fail',lbl:'X',name:'Classification coverage scan',meta:'Auto · Varonis',age:'54% coverage only'}],remediation:'Deploy automated data discovery and tagging (Varonis / Macie). Complete manual review of unclassified stores. Train data owners.',effort:'High',phase:2},
+  {id:'CTRL-0009',name:'Data retention & disposal policy',domain:'Data Protection',mat:2,fw:['GDPR','HIPAA','SOC2'],status:'Fail',owner:'A. Chen',tested:'25 Mar 2026',freq:'Monthly check',evid:'S3 lifecycle',scope:'All storage',type:'Preventive',crit:'Critical',risk:20,riskL:5,riskI:4,aud:'Not ready',audChecks:[{ok:true,t:'Policy documented'},{ok:false,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'Retention schedules enforced. S3 lifecycle rules applied. Secure deletion verified.',evidence:[{icon:'ei-fail',lbl:'X',name:'S3 lifecycle rule audit',meta:'Auto · AWS Config',age:'2 buckets missing rules'},{icon:'ei-pend',lbl:'!',name:'Deletion verification log',meta:'Manual required',age:'Not started'}],remediation:'Apply S3 lifecycle rules to 2 non-compliant buckets. Document legal holds. Verify deletion certificates.',effort:'Medium',phase:1},
+  {id:'CTRL-0010',name:'DLP — data loss prevention',domain:'Data Protection',mat:3,fw:['ISO','NIST','GDPR'],status:'Warning',owner:'A. Chen',tested:'28 Mar 2026',freq:'Continuous',evid:'DLP policy logs',scope:'Email + cloud',type:'Detective',crit:'High',risk:12,riskL:3,riskI:4,aud:'Partial',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'DLP rules active on email and cloud storage to prevent exfiltration of classified data.',evidence:[{icon:'ei-auto',lbl:'A',name:'DLP incident log — Q1',meta:'Auto · Microsoft Purview',age:'28 Mar'},{icon:'ei-pend',lbl:'!',name:'DLP rule coverage gap report',meta:'Manual · A. Chen',age:'Pending'}],remediation:'Expand DLP coverage to endpoint and SaaS applications. Tune false-positive rules. Document exception process.',effort:'Medium',phase:2},
+  {id:'CTRL-0011',name:'Vulnerability scanning — internal',domain:'Vulnerability Mgmt',mat:4,fw:['SOC2','NIST','PCI'],status:'Pass',owner:'M. Tran',tested:'02 Apr 2026',freq:'Daily',evid:'Tenable reports',scope:'All internal hosts',type:'Detective',crit:'High',risk:8,riskL:2,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'Authenticated internal scans run daily. All assets in scope.',evidence:[{icon:'ei-auto',lbl:'A',name:'Tenable scan report — 02 Apr',meta:'Auto · Tenable.io',age:'Today'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0012',name:'Vulnerability scanning — external',domain:'Vulnerability Mgmt',mat:4,fw:['SOC2','PCI','NIST'],status:'Pass',owner:'M. Tran',tested:'01 Apr 2026',freq:'Weekly',evid:'Wiz / Tenable',scope:'Public endpoints',type:'Detective',crit:'High',risk:8,riskL:2,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'External attack-surface scanning weekly.',evidence:[{icon:'ei-auto',lbl:'A',name:'External scan — 01 Apr',meta:'Auto · Wiz',age:'01 Apr'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0013',name:'Patch management — critical SLA',domain:'Vulnerability Mgmt',mat:3,fw:['SOC2','PCI','NIST'],status:'Warning',owner:'M. Tran',tested:'31 Mar 2026',freq:'Continuous',evid:'Patch tracker',scope:'All systems',type:'Corrective',crit:'Critical',risk:18,riskL:3,riskI:6,aud:'Partial',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'Critical vulnerabilities (CVSS ≥ 9.0) patched within 72h of disclosure.',evidence:[{icon:'ei-auto',lbl:'A',name:'Patch SLA compliance dashboard',meta:'Auto · Tenable + Jira',age:'31 Mar'},{icon:'ei-fail',lbl:'X',name:'2 critical CVEs beyond SLA',meta:'Auto · Tenable',age:'Overdue 4d'}],remediation:'Patch 2 outstanding critical CVEs immediately. Review SLA exception process. Automate patch deployment pipeline.',effort:'Medium',phase:1},
+  {id:'CTRL-0014',name:'Container image scanning',domain:'Vulnerability Mgmt',mat:4,fw:['NIST','ISO'],status:'Pass',owner:'M. Tran',tested:'02 Apr 2026',freq:'Every build',evid:'Snyk / Wiz',scope:'All containers',type:'Preventive',crit:'High',risk:7,riskL:2,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'All container images scanned pre-deployment. Critical findings block deploy.',evidence:[{icon:'ei-auto',lbl:'A',name:'Snyk scan — latest build',meta:'Auto · CI/CD pipeline',age:'02 Apr'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0015',name:'Annual penetration test',domain:'Vulnerability Mgmt',mat:3,fw:['SOC2','PCI','ISO'],status:'Warning',owner:'M. Tran',tested:'Nov 2025',freq:'Annual',evid:'PenTest report',scope:'Full stack',type:'Detective',crit:'High',risk:14,riskL:2,riskI:7,aud:'Partial',audChecks:[{ok:true,t:'Policy documented'},{ok:false,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'Annual third-party penetration test covering application and infrastructure.',evidence:[{icon:'ei-man',lbl:'M',name:'PenTest report — Nov 2025',meta:'Manual · External firm',age:'5 months ago'},{icon:'ei-pend',lbl:'!',name:'2026 PenTest — scheduling',meta:'Manual · M. Tran',age:'Due Q2 2026'}],remediation:'Schedule and complete 2026 penetration test. Remediate all open findings from Nov 2025 report.',effort:'High',phase:2},
+  {id:'CTRL-0016',name:'Incident response plan',domain:'Incident Response',mat:2,fw:['SOC2','NIST','ISO'],status:'Fail',owner:'L. Park',tested:'Feb 2026',freq:'Annual test',evid:'IR plan v3 (stale)',scope:'All incidents',type:'Corrective',crit:'Critical',risk:18,riskL:3,riskI:6,aud:'Not ready',audChecks:[{ok:false,t:'Policy documented (current)'},{ok:false,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'Documented IR plan aligned to NIST 800-61. Tested via tabletop exercises.',evidence:[{icon:'ei-fail',lbl:'X',name:'IR plan v3 — CISO review overdue',meta:'Manual required · CISO',age:'14 months stale'},{icon:'ei-pend',lbl:'!',name:'Tabletop exercise — 2026',meta:'Manual · L. Park',age:'Not scheduled'}],remediation:'Update IR plan v3 to v4. Obtain CISO sign-off. Schedule Q2 tabletop exercise. Document lessons learned.',effort:'Medium',phase:1},
+  {id:'CTRL-0017',name:'Incident classification & triage',domain:'Incident Response',mat:3,fw:['SOC2','NIST'],status:'Pass',owner:'L. Park',tested:'02 Apr 2026',freq:'Event-driven',evid:'PagerDuty logs',scope:'All incidents',type:'Detective',crit:'High',risk:8,riskL:2,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'Incidents classified P1–P4 with defined SLAs. P1 requires CISO notification within 15 min.',evidence:[{icon:'ei-auto',lbl:'A',name:'PagerDuty incident log — Q1',meta:'Auto · PagerDuty',age:'02 Apr'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0018',name:'Post-incident review (PIR)',domain:'Incident Response',mat:3,fw:['SOC2','ISO'],status:'Pass',owner:'L. Park',tested:'20 Mar 2026',freq:'Per P1/P2',evid:'PIR documents',scope:'P1/P2 only',type:'Corrective',crit:'Medium',risk:6,riskL:2,riskI:3,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'Blameless PIR within 5 business days of P1/P2. Action items tracked.',evidence:[{icon:'ei-man',lbl:'M',name:'PIR — Feb 2026 incident',meta:'Manual · L. Park',age:'20 Mar'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0019',name:'SIEM log correlation & alerting',domain:'Incident Response',mat:4,fw:['SOC2','PCI','NIST'],status:'Pass',owner:'L. Park',tested:'02 Apr 2026',freq:'Continuous',evid:'Splunk dashboards',scope:'All log sources',type:'Detective',crit:'High',risk:7,riskL:2,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'All security logs centralised in Splunk. Correlation rules fire on anomalous patterns.',evidence:[{icon:'ei-auto',lbl:'A',name:'Splunk alert rule inventory',meta:'Auto · Splunk',age:'02 Apr'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0020',name:'Forensic evidence preservation',domain:'Incident Response',mat:2,fw:['ISO','NIST'],status:'Warning',owner:'L. Park',tested:'10 Mar 2026',freq:'Per incident',evid:'Manual process',scope:'P1 incidents',type:'Corrective',crit:'Medium',risk:10,riskL:2,riskI:5,aud:'Partial',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'Evidence collection procedures documented. Chain-of-custody maintained for P1 incidents.',evidence:[{icon:'ei-man',lbl:'M',name:'Chain-of-custody procedure v1',meta:'Manual · L. Park',age:'10 Mar'},{icon:'ei-pend',lbl:'!',name:'Tooling evaluation (automated)',meta:'Manual · L. Park',age:'In progress'}],remediation:'Implement forensic tooling (Velociraptor / KAPE). Automate evidence collection for P1 incidents. Train SOC team.',effort:'High',phase:3},
+  {id:'CTRL-0021',name:'Change advisory board (CAB)',domain:'Change Management',mat:3,fw:['SOC2','ISO','PCI'],status:'Warning',owner:'R. Singh',tested:'01 Apr 2026',freq:'Per change',evid:'ServiceNow CMDB',scope:'Prod systems',type:'Preventive',crit:'High',risk:12,riskL:3,riskI:4,aud:'Partial',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'All production changes approved by CAB before deployment.',evidence:[{icon:'ei-auto',lbl:'A',name:'ServiceNow CAB approval log',meta:'Auto · ServiceNow',age:'01 Apr'},{icon:'ei-pend',lbl:'!',name:'Emergency change process update',meta:'Manual · R. Singh',age:'Draft'}],remediation:'Update emergency change process. Enforce CAB quorum requirements. Link ServiceNow tickets to deployments.',effort:'Low',phase:2},
+  {id:'CTRL-0022',name:'Infrastructure-as-code enforcement',domain:'Change Management',mat:4,fw:['NIST','ISO'],status:'Pass',owner:'R. Singh',tested:'02 Apr 2026',freq:'Continuous',evid:'Terraform + SCPs',scope:'Cloud infra',type:'Preventive',crit:'High',risk:7,riskL:2,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'All infrastructure changes via IaC (Terraform). Manual console changes blocked via SCPs.',evidence:[{icon:'ei-auto',lbl:'A',name:'SCP enforcement log',meta:'Auto · AWS',age:'02 Apr'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0023',name:'Asset inventory management',domain:'Change Management',mat:1,fw:['SOC2','ISO','NIST'],status:'Fail',owner:'R. Singh',tested:'28 Mar 2026',freq:'Continuous',evid:'ServiceNow (offline)',scope:'All assets',type:'Detective',crit:'High',risk:16,riskL:4,riskI:4,aud:'Not ready',audChecks:[{ok:false,t:'Policy documented'},{ok:false,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'All IT assets catalogued in CMDB. Ownership, classification, and criticality recorded.',evidence:[{icon:'ei-fail',lbl:'X',name:'ServiceNow CMDB — offline',meta:'Connector broken · 28 Mar',age:'Offline 6d'},{icon:'ei-pend',lbl:'!',name:'Manual asset audit backup',meta:'Manual · R. Singh',age:'In progress'}],remediation:'Restore ServiceNow connector (ETA 07 Apr). Perform emergency manual asset audit. Rebuild CMDB tagging process.',effort:'High',phase:1},
+  {id:'CTRL-0024',name:'Security awareness training',domain:'Third-party Security',mat:3,fw:['SOC2','HIPAA','ISO'],status:'Warning',owner:'HR',tested:'01 Apr 2026',freq:'Annual + quarterly',evid:'KnowBe4 reports',scope:'All employees',type:'Preventive',crit:'Medium',risk:10,riskL:2,riskI:5,aud:'Partial',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'Annual mandatory training. Phishing simulations quarterly. Completion at 61% — target 90%.',evidence:[{icon:'ei-auto',lbl:'A',name:'KnowBe4 completion dashboard',meta:'Auto · KnowBe4',age:'01 Apr'},{icon:'ei-pend',lbl:'!',name:'Q2 phishing simulation',meta:'HR / L. Park',age:'Scheduled 15 Apr'}],remediation:'Drive completion rate to 90% by 30 Apr. Set automated reminders. Escalate non-completions to managers.',effort:'Low',phase:1},
+  {id:'CTRL-0025',name:'Vendor security assessment',domain:'Third-party Security',mat:2,fw:['SOC2','ISO','GDPR'],status:'Fail',owner:'CISO',tested:'01 Feb 2026',freq:'Annual',evid:'VSAQ responses',scope:'Tier 1 vendors',type:'Detective',crit:'High',risk:16,riskL:4,riskI:4,aud:'Not ready',audChecks:[{ok:true,t:'Policy documented'},{ok:false,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'All Tier 1 vendors assessed annually. Security questionnaire + evidence review required.',evidence:[{icon:'ei-fail',lbl:'X',name:'Snowflake VSAQ — overdue',meta:'Manual · CISO',age:'Overdue 60d'},{icon:'ei-fail',lbl:'X',name:'XYZ Corp VSAQ — failed',meta:'Manual · M. Tran',age:'Score 43/100'}],remediation:'Complete overdue Snowflake and XYZ Corp assessments. Escalate XYZ Corp findings to commercial team. Update vendor risk register.',effort:'Medium',phase:2},
+  {id:'CTRL-0026',name:'Backup integrity verification',domain:'Business Continuity',mat:3,fw:['SOC2','ISO','HIPAA'],status:'Warning',owner:'R. Singh',tested:'01 Apr 2026',freq:'Daily',evid:'Backup logs',scope:'All data',type:'Detective',crit:'High',risk:12,riskL:3,riskI:4,aud:'Partial',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'Daily backups verified via automated restore test. SHA-256 hash compared against source.',evidence:[{icon:'ei-auto',lbl:'A',name:'Daily backup integrity log',meta:'Auto · AWS Backup',age:'02 Apr'},{icon:'ei-pend',lbl:'!',name:'Manual restore test Q1',meta:'Manual · R. Singh',age:'Due 30 Apr'}],remediation:'Complete Q1 manual restore test. Document restore procedure. Verify cross-region backup replication.',effort:'Low',phase:2},
+  {id:'CTRL-0027',name:'EDR — endpoint detection & response',domain:'Network Security',mat:3,fw:['NIST','SOC2'],status:'Fail',owner:'M. Tran',tested:'01 Apr 2026',freq:'Continuous',evid:'CrowdStrike (degraded)',scope:'All endpoints',type:'Detective',crit:'High',risk:18,riskL:3,riskI:6,aud:'Not ready',audChecks:[{ok:true,t:'Policy documented'},{ok:false,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'EDR agent deployed on all endpoints. Real-time threat detection and isolation capability.',evidence:[{icon:'ei-fail',lbl:'X',name:'CrowdStrike API — degraded',meta:'Auto · CrowdStrike',age:'Degraded since 01 Apr'},{icon:'ei-pend',lbl:'!',name:'Manual endpoint coverage report',meta:'Manual · M. Tran',age:'In progress'}],remediation:'Restore CrowdStrike API connectivity (P1 open). Verify agent coverage on all 847 endpoints. Enable auto-healing policy.',effort:'Medium',phase:1},
+  {id:'CTRL-0028',name:'Network segmentation',domain:'Network Security',mat:4,fw:['PCI','NIST','SOC2'],status:'Pass',owner:'M. Tran',tested:'02 Apr 2026',freq:'Continuous',evid:'VPC flow logs',scope:'All environments',type:'Preventive',crit:'High',risk:7,riskL:2,riskI:4,aud:'Ready',audChecks:[{ok:true,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:true,t:'Owner sign-off'},{ok:true,t:'No open findings'}],desc:'Production, staging, and dev segmented via VPC. Lateral movement restricted.',evidence:[{icon:'ei-auto',lbl:'A',name:'VPC flow log analysis',meta:'Auto · AWS',age:'02 Apr'}],remediation:'No remediation required.',effort:'None',phase:0},
+  {id:'CTRL-0029',name:'Zero-trust network access (ZTNA)',domain:'Network Security',mat:2,fw:['NIST','ISO'],status:'Warning',owner:'M. Tran',tested:'01 Mar 2026',freq:'Continuous',evid:'Partial rollout',scope:'Remote access',type:'Preventive',crit:'High',risk:14,riskL:2,riskI:7,aud:'Partial',audChecks:[{ok:false,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'Network access based on identity and device posture. VPN being deprecated for internal services.',evidence:[{icon:'ei-auto',lbl:'A',name:'ZTNA coverage report',meta:'Auto · Cloudflare Access',age:'01 Mar'},{icon:'ei-pend',lbl:'!',name:'VPN deprecation plan',meta:'Manual · M. Tran',age:'Draft — Q3 target'}],remediation:'Finalise ZTNA policy document. Expand Cloudflare Access to all internal apps. Complete VPN deprecation plan.',effort:'High',phase:3},
+  {id:'CTRL-0030',name:'Supply chain software integrity',domain:'Third-party Security',mat:2,fw:['NIST','ISO'],status:'Warning',owner:'M. Tran',tested:'28 Mar 2026',freq:'Per build',evid:'SBOM + Grype',scope:'All dependencies',type:'Detective',crit:'High',risk:14,riskL:2,riskI:7,aud:'Partial',audChecks:[{ok:false,t:'Policy documented'},{ok:true,t:'Evidence collected last 90d'},{ok:false,t:'Owner sign-off'},{ok:false,t:'No open findings'}],desc:'SBOM generated per build. Dependencies checked against CVE database.',evidence:[{icon:'ei-auto',lbl:'A',name:'SBOM generation log',meta:'Auto · CI pipeline',age:'28 Mar'},{icon:'ei-pend',lbl:'!',name:'Supply chain security policy',meta:'Manual · M. Tran',age:'Draft'}],remediation:'Formalise supply chain security policy. Expand SBOM coverage to all repos. Integrate dependency review into PR process.',effort:'Medium',phase:3}
+];
+
+var ROADMAP_PHASES=[
+  {label:'Phase 1 — immediate (0–30 days)',color:'#f87171',bg:'rgba(239,68,68,.06)',bd:'rgba(239,68,68,.2)',num_bg:'rgba(239,68,68,.15)',num_c:'#A32D2D',filter:function(c){return c.phase===1}},
+  {label:'Phase 2 — short-term (31–90 days)',color:'#facc15',bg:'rgba(234,179,8,.06)',bd:'rgba(234,179,8,.2)',num_bg:'rgba(234,179,8,.15)',num_c:'#633806',filter:function(c){return c.phase===2}},
+  {label:'Phase 3 — medium-term (91–180 days)',color:'#7eb8f7',bg:'rgba(55,138,221,.06)',bd:'rgba(55,138,221,.2)',num_bg:'rgba(55,138,221,.15)',num_c:'#0C447C',filter:function(c){return c.phase===3}}
+];
+
+var expandedId=null;
+var activeTab='catalog';
+
+function switchTab(t){
+  activeTab=t;
+  document.getElementById('view-catalog').style.display=t==='catalog'?'':'none';
+  document.getElementById('view-roadmap').style.display=t==='roadmap'?'':'none';
+  document.querySelectorAll('.tab').forEach(function(el){el.classList.remove('active')});
+  document.getElementById('tab-'+t).classList.add('active');
+  if(t==='roadmap')renderRoadmap();
+}
+
+function riskColor(r){if(r>=18)return'#f87171';if(r>=12)return'#fb923c';if(r>=8)return'#facc15';return'#4ade80'}
+function matSegs(m){var s='';for(var i=1;i<=5;i++)s+='<div class="mat-seg" style="background:'+(i<=m?MF[m]:'var(--color-background-tertiary)')+'"></div>';return s}
+function statusCls(s){return s==='Pass'?'s-pass':s==='Fail'?'s-fail':s==='Warning'?'s-warn':'s-na'}
+function audCls(a){return a==='Ready'?'aud-ready':a==='Partial'?'aud-partial':'aud-notready'}
+function critCls(c){return c==='Critical'?'crit-crit':c==='High'?'crit-high':c==='Medium'?'crit-med':'crit-low'}
+function typeCls(t){return t==='Preventive'?'type-prev':t==='Detective'?'type-det':t==='Corrective'?'type-corr':'type-comp'}
+function fwTag(f){var cls='ft-g';if(f==='SOC2')cls='ft-b';else if(f==='PCI')cls='ft-a';else if(f==='GDPR'||f==='HIPAA')cls='ft-c';else if(f==='NIST')cls='ft-p';return'<span class="fw-tag '+cls+'">'+f+'</span>'}
+function effortCls(e){return e==='High'?'crit-high':e==='Medium'?'crit-med':e==='Low'?'crit-low':'s-na'}
+
+/* ---- NEW: Health Score (0-100) ---- */
+function healthScore(c){
+  // Maturity component: 0-40
+  var matPts=Math.round((c.mat/5)*40);
+  // Status component: 0-25
+  var staPts=c.status==='Pass'?25:c.status==='Warning'?12:0;
+  // Audit readiness: 0-20
+  var audPts=c.aud==='Ready'?20:c.aud==='Partial'?10:0;
+  // Evidence: 0-15 (based on passing audit checks)
+  var ckPass=c.audChecks.filter(function(a){return a.ok}).length;
+  var ckPts=Math.round((ckPass/c.audChecks.length)*15);
+  return Math.min(100,matPts+staPts+audPts+ckPts);
+}
+function healthColor(s){if(s>=75)return'#4ade80';if(s>=50)return'#facc15';if(s>=30)return'#fb923c';return'#f87171'}
+
+/* ---- NEW: Residual Risk ---- */
+function residualRisk(c){
+  // Residual = Inherent risk × (1 - control effectiveness)
+  // Effectiveness driven by maturity (0-100%) and status
+  var matEff=[0,0.10,0.25,0.50,0.75,0.95][c.mat];
+  var staMulti=c.status==='Pass'?1:c.status==='Warning'?0.7:0.3;
+  var eff=matEff*staMulti;
+  return Math.round(c.risk*(1-eff)*10)/10;
+}
+function rrColor(r){if(r>=15)return'#f87171';if(r>=10)return'#fb923c';if(r>=6)return'#facc15';return'#4ade80'}
+function rrLabel(r){if(r>=15)return'CRITICAL';if(r>=10)return'HIGH';if(r>=6)return'MEDIUM';return'LOW'}
+function rrBg(r){if(r>=15)return'rgba(239,68,68,.12)';if(r>=10)return'rgba(249,115,22,.12)';if(r>=6)return'rgba(234,179,8,.12)';return'rgba(34,197,94,.12)'}
+
+function getFiltered(){
+  var q=(document.getElementById('search').value||'').toLowerCase();
+  var dom=document.getElementById('sel-dom').value;
+  var sta=document.getElementById('sel-sta').value;
+  var typ=document.getElementById('sel-type').value;
+  var crit=document.getElementById('sel-crit').value;
+  var aud=document.getElementById('sel-aud').value;
+  var fw=document.getElementById('sel-fw').value;
+  var own=document.getElementById('sel-own').value;
+  return C.filter(function(c){
+    if(dom&&c.domain!==dom)return false;
+    if(sta&&c.status!==sta)return false;
+    if(typ&&c.type!==typ)return false;
+    if(crit&&c.crit!==crit)return false;
+    if(aud&&c.aud!==aud)return false;
+    if(fw&&c.fw.indexOf(fw)<0)return false;
+    if(own&&c.owner!==own)return false;
+    if(q){var h=(c.id+' '+c.name+' '+c.owner+' '+c.domain+' '+c.type+' '+c.crit+' '+c.fw.join(' ')).toLowerCase();if(h.indexOf(q)<0)return false;}
+    return true;
+  });
+}
+
+function render(){
+  var data=getFiltered();
+  document.getElementById('fc').textContent=data.length+' of '+C.length+' controls';
+  var pass=data.filter(function(c){return c.status==='Pass'}).length;
+  var fail=data.filter(function(c){return c.status==='Fail'}).length;
+  var warn=data.filter(function(c){return c.status==='Warning'}).length;
+  var avgM=data.length?Math.round(data.reduce(function(s,c){return s+c.mat},0)/data.length*10)/10:0;
+  var avgR=data.length?Math.round(data.reduce(function(s,c){return s+c.risk},0)/data.length*10)/10:0;
+  var audR=data.length?Math.round(data.filter(function(c){return c.aud==='Ready'}).length/data.length*100):0;
+  // New KPIs
+  var avgHS=data.length?Math.round(data.reduce(function(s,c){return s+healthScore(c)},0)/data.length):0;
+  var avgRR=data.length?Math.round(data.reduce(function(s,c){return s+residualRisk(c)},0)/data.length*10)/10:0;
+  // Coverage: domains that have at least one passing control
+  var allDomains=['Identity & Access','Data Protection','Vulnerability Mgmt','Incident Response','Change Management','Business Continuity','Network Security','Third-party Security'];
+  var coveredDomains=allDomains.filter(function(d){return data.some(function(c){return c.domain===d&&c.status==='Pass'})});
+  var covPct=Math.round(coveredDomains.length/allDomains.length*100);
+
+  document.getElementById('kpi-t').textContent=data.length;
+  document.getElementById('kpi-p').textContent=pass;
+  document.getElementById('kpi-f').textContent=fail;
+  document.getElementById('kpi-w').textContent=warn;
+  document.getElementById('kpi-m').textContent=avgM.toFixed(1);
+  document.getElementById('kpi-r').textContent=avgR.toFixed(1);
+  document.getElementById('kpi-a').textContent=audR+'%';
+  document.getElementById('kpi-hs').textContent=avgHS;
+  document.getElementById('kpi-hs').style.color=healthColor(avgHS);
+  document.getElementById('kpi-rr').textContent=avgRR.toFixed(1);
+  document.getElementById('kpi-rr').style.color=rrColor(avgRR);
+  document.getElementById('kpi-cov').textContent=covPct+'%';
+  document.getElementById('cov-bar-fill').style.width=covPct+'%';
+  document.getElementById('cov-bar-fill').style.background=covPct>=75?'#4ade80':covPct>=50?'#facc15':'#fb923c';
+  document.getElementById('kpi-cov-sub').textContent=coveredDomains.length+'/'+allDomains.length+' domains covered';
+
+  var tbody=document.getElementById('tbody');
+  tbody.innerHTML='';
+  data.forEach(function(c){
+    var tr=document.createElement('tr');
+    var hs=healthScore(c);
+    var rr=residualRisk(c);
+    if(expandedId===c.id)tr.classList.add('sel');
+    tr.innerHTML='<td class="cid">'+c.id+'</td>'
+      +'<td class="cname">'+c.name+'</td>'
+      +'<td><span class="badge '+typeCls(c.type)+'">'+c.type+'</span></td>'
+      +'<td style="font-size:10px;color:var(--color-text-secondary)">'+c.domain+'</td>'
+      +'<td style="font-size:10px;color:var(--color-text-secondary)">'+c.owner+'</td>'
+      +'<td class="col-fw" style="white-space:normal;line-height:1.6">'+c.fw.map(fwTag).join('')+'</td>'
+      +'<td><div style="display:flex;align-items:center;gap:4px"><div class="mat-segs">'+matSegs(c.mat)+'</div><span style="font-size:10px;font-weight:700;color:'+MF[c.mat]+';font-family:DM Mono,monospace">L'+c.mat+'</span></div></td>'
+      +'<td><span class="risk-num" style="color:'+riskColor(c.risk)+'">'+c.risk+'</span><span style="font-size:9px;color:var(--color-text-tertiary);font-family:DM Mono,monospace"> /25</span></td>'
+      +'<td><div class="rr-pill" style="background:'+rrBg(rr)+';color:'+rrColor(rr)+'">'+rr.toFixed(1)+'</div></td>'
+      +'<td><div class="hs-ring"><span class="hs-val" style="color:'+healthColor(hs)+'">'+hs+'</span><div class="hs-bar"><div class="hs-fill" style="width:'+hs+'%;background:'+healthColor(hs)+'"></div></div></div></td>'
+      +'<td><span class="badge '+critCls(c.crit)+'">'+c.crit+'</span></td>'
+      +'<td><span class="badge '+audCls(c.aud)+'">'+c.aud+'</span></td>'
+      +'<td><span class="badge '+statusCls(c.status)+'">'+c.status.toUpperCase()+'</span></td>';
+    tr.onclick=function(){expandedId=(expandedId===c.id)?null:c.id;render()};
+    tbody.appendChild(tr);
+    if(expandedId===c.id){
+      var etr=document.createElement('tr');
+      etr.className='exp-row';
+      etr.innerHTML='<td colspan="13"><div class="exp-inner">'+buildExp(c)+'</div></td>';
+      tbody.appendChild(etr);
+    }
+  });
+}
+
+function buildExp(c){
+  var hs=healthScore(c);
+  var rr=residualRisk(c);
+  var matLvs='';
+  for(var i=1;i<=5;i++){
+    var cur=i===c.mat;
+    matLvs+='<div class="mat-lv'+(cur?' cur':'')+'" style="background:'+MB[i]+';border-color:'+(cur?MBD[i]:'transparent')+';">'
+      +'<div class="mat-lv-num" style="color:'+MTC[i]+'">L'+i+'</div>'
+      +'<div class="mat-lv-name" style="color:'+(cur?MTC[i]:'var(--color-text-primary)')+'">'+MN[i]+'</div>'
+      +'<div class="mat-lv-desc" style="color:'+(cur?MTC[i]:'var(--color-text-tertiary)')+'">'+MD[i]+'</div>'
+      +'</div>';
+  }
+  var audChecksHtml=c.audChecks.map(function(a){
+    return'<div class="aud-check"><div class="aud-dot" style="background:'+(a.ok?'#4ade80':'#f87171')+'"></div><span style="color:'+(a.ok?'var(--color-text-secondary)':'var(--color-text-danger)')+'">'+a.t+'</span></div>';
+  }).join('');
+  var evidHtml=c.evidence.map(function(e){
+    return'<div class="evid-row"><div class="evid-icon '+e.icon+'">'+e.lbl+'</div><div style="flex:1"><div class="evid-name">'+e.name+'</div><div class="evid-meta">'+e.meta+'</div></div><div class="evid-age">'+e.age+'</div></div>';
+  }).join('');
+
+  // Health score factor breakdown
+  var matPts=Math.round((c.mat/5)*40);
+  var staPts=c.status==='Pass'?25:c.status==='Warning'?12:0;
+  var audPts=c.aud==='Ready'?20:c.aud==='Partial'?10:0;
+  var ckPass=c.audChecks.filter(function(a){return a.ok}).length;
+  var ckPts=Math.round((ckPass/c.audChecks.length)*15);
+
+  return'<div class="exp-top">'
+    +'<div class="ecard"><div class="elbl">Description</div><div class="eval">'+c.desc+'</div></div>'
+    +'<div class="ecard"><div class="elbl">Frameworks</div><div class="eval" style="display:flex;flex-wrap:wrap;gap:3px;margin-top:2px">'+c.fw.map(fwTag).join('')+'</div></div>'
+    +'<div class="ecard"><div class="elbl">Control owner</div><div class="eval" style="font-size:14px;font-weight:600">'+c.owner+'</div><div class="elbl" style="margin-top:5px">Scope</div><div class="eval">'+c.scope+'</div></div>'
+    +'<div class="ecard"><div class="elbl">Testing freq / Last tested</div><div class="eval">'+c.freq+'<br><span style="color:var(--color-text-tertiary);font-size:10px">'+c.tested+'</span></div></div>'
+    +'</div>'
+
+    // Health Score detail
+    +'<div class="hs-detail"><div class="sec-title" style="display:flex;align-items:center;gap:8px">Control health score <span style="font-size:18px;font-weight:700;font-family:DM Mono,monospace;color:'+healthColor(hs)+'">'+hs+'/100</span><div class="hs-bar" style="width:80px;height:7px"><div class="hs-fill" style="width:'+hs+'%;background:'+healthColor(hs)+'"></div></div></div>'
+    +'<div class="hs-breakdown">'
+    +'<div class="hs-factor" style="background:rgba(127,119,221,.07);border:.5px solid rgba(127,119,221,.2)"><div class="hs-f-lbl" style="color:#3C3489">Maturity</div><div class="hs-f-val" style="color:'+MF[c.mat]+'">'+matPts+'</div><div class="hs-f-sub" style="color:var(--color-text-tertiary)">of 40 pts · L'+c.mat+'</div></div>'
+    +'<div class="hs-factor" style="background:rgba(34,197,94,.07);border:.5px solid rgba(34,197,94,.2)"><div class="hs-f-lbl" style="color:#27500A">Status</div><div class="hs-f-val" style="color:'+healthColor(staPts/25*100)+'">'+staPts+'</div><div class="hs-f-sub" style="color:var(--color-text-tertiary)">of 25 pts · '+c.status+'</div></div>'
+    +'<div class="hs-factor" style="background:rgba(55,138,221,.07);border:.5px solid rgba(55,138,221,.2)"><div class="hs-f-lbl" style="color:#0C447C">Audit readiness</div><div class="hs-f-val" style="color:'+healthColor(audPts/20*100)+'">'+audPts+'</div><div class="hs-f-sub" style="color:var(--color-text-tertiary)">of 20 pts · '+c.aud+'</div></div>'
+    +'<div class="hs-factor" style="background:rgba(234,179,8,.07);border:.5px solid rgba(234,179,8,.2)"><div class="hs-f-lbl" style="color:#633806">Evidence</div><div class="hs-f-val" style="color:'+healthColor(ckPts/15*100)+'">'+ckPts+'</div><div class="hs-f-sub" style="color:var(--color-text-tertiary)">of 15 pts · '+ckPass+'/'+c.audChecks.length+' checks</div></div>'
+    +'</div></div>'
+
+    +'<div class="risk-detail"><div class="sec-title">Risk scoring</div>'
+    +'<div class="risk-grid">'
+    +'<div class="rg-cell" style="background:rgba(239,68,68,.07);border:.5px solid rgba(239,68,68,.2)"><div class="rg-lbl" style="color:#A32D2D">Composite risk</div><div class="rg-val" style="color:'+riskColor(c.risk)+'">'+c.risk+'/25</div><div class="rg-sub" style="color:var(--color-text-tertiary)">Likelihood × Impact</div></div>'
+    +'<div class="rg-cell" style="background:rgba(249,115,22,.07);border:.5px solid rgba(249,115,22,.2)"><div class="rg-lbl" style="color:#854F0B">Likelihood</div><div class="rg-val" style="color:#fb923c">'+c.riskL+'/5</div><div class="rg-sub" style="color:var(--color-text-tertiary)">Probability of occurrence</div></div>'
+    +'<div class="rg-cell" style="background:rgba(127,119,221,.07);border:.5px solid rgba(127,119,221,.2)"><div class="rg-lbl" style="color:#3C3489">Impact</div><div class="rg-val" style="color:#7F77DD">'+c.riskI+'/5</div><div class="rg-sub" style="color:var(--color-text-tertiary)">Business + compliance impact</div></div>'
+    +'</div>'
+
+    // Residual Risk
+    +'<div style="margin-top:8px;padding:10px 12px;background:rgba(var(--rr-rgb,239,68,68),.05);border:.5px solid '+rrColor(rr)+';border-radius:6px;display:flex;align-items:flex-start;gap:12px">'
+    +'<div><div style="font-size:9px;font-family:DM Mono,monospace;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--color-text-tertiary);margin-bottom:3px">Residual risk (post-control)</div>'
+    +'<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:22px;font-weight:700;font-family:DM Mono,monospace;color:'+rrColor(rr)+'">'+rr.toFixed(1)+'</span><span style="font-size:10px;color:var(--color-text-tertiary)">/25</span><span class="rr-pill" style="background:'+rrBg(rr)+';color:'+rrColor(rr)+'">'+rrLabel(rr)+'</span></div></div>'
+    +'<div style="flex:1;padding-left:12px;border-left:.5px solid var(--color-border-tertiary)"><div style="font-size:9px;font-family:DM Mono,monospace;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Calculation</div>'
+    +'<div style="font-size:11px;color:var(--color-text-secondary);line-height:1.5">Inherent risk <strong style="color:var(--color-text-primary)">'+c.risk+'/25</strong> × (1 − control effectiveness). Effectiveness based on maturity L'+c.mat+' ('+Math.round([0,10,25,50,75,95][c.mat])+'%) × status factor ('+c.status+'). Reducing exposure by <strong style="color:#4ade80">'+Math.round((1-rr/c.risk)*100)+'%</strong>.</div></div>'
+    +'</div>'
+    +'</div>'
+
+    +'<div class="evid-section"><div class="sec-title">Control testing evidence</div>'+'<div style="margin-top:8px">'+evidHtml+'</div></div>'
+    +'<div class="mat-detail"><div class="sec-title">Maturity model — current: L'+c.mat+' ('+MN[c.mat]+')</div><div class="mat-levels">'+matLvs+'</div></div>'
+    +'<div class="aud-detail"><div class="sec-title">Audit readiness checklist — <span class="badge '+audCls(c.aud)+'">'+c.aud+'</span></div><div class="aud-checks" style="margin-top:8px">'+audChecksHtml+'</div></div>'
+    +(c.phase>0?'<div class="ecard" style="background:rgba(249,115,22,.06);border:.5px solid rgba(249,115,22,.25);margin-bottom:0"><div class="elbl">Remediation guidance</div><div class="eval" style="margin-top:4px">'+c.remediation+'</div><div style="margin-top:8px;display:flex;align-items:center;gap:6px"><span class="elbl">Effort</span><span class="badge '+effortCls(c.effort)+'">'+c.effort+'</span><span class="elbl" style="margin-left:8px">Roadmap phase</span><span class="badge s-pass">Phase '+c.phase+'</span></div></div>':'')
+    +'<div class="exp-btns">'
+    +(c.mat<5?'<button class="sbtn" onclick="sendPrompt(\'Steps to uplift '+c.id+' maturity from L'+c.mat+' to L'+(c.mat+1)+'?\')">Improve L'+c.mat+' → L'+(c.mat+1)+' ↗</button>':'')
+    +'<button class="sbtn" onclick="sendPrompt(\'Evidence checklist for '+c.id+' — '+c.name+'\')">Evidence checklist ↗</button>'
+    +'<button class="sbtn" onclick="sendPrompt(\'What is the detailed remediation plan for '+c.id+'?\')">Detailed remediation ↗</button>'
+    +'<button class="sbtn" onclick="sendPrompt(\'How can '+c.owner+' reduce the residual risk for '+c.id+'?\')">Reduce residual risk ↗</button>'
+    +'</div>';
+}
+
+function renderRoadmap(){
+  var remediate=C.filter(function(c){return c.phase>0});
+  document.getElementById('rm-open').textContent=remediate.length;
+  document.getElementById('rm-q1').textContent=C.filter(function(c){return c.phase===1}).length;
+  document.getElementById('rm-q2').textContent=C.filter(function(c){return c.phase===2}).length;
+  document.getElementById('rm-q3').textContent=C.filter(function(c){return c.phase===3}).length;
+
+  var html='';
+  ROADMAP_PHASES.forEach(function(ph){
+    var items=C.filter(ph.filter);
+    if(!items.length)return;
+    html+='<div>'
+      +'<div class="ph-header" style="background:'+ph.bg+';border:.5px solid '+ph.bd+';border-radius:7px">'
+      +'<div class="ph-num" style="background:'+ph.num_bg+';color:'+ph.num_c+'">'+items.length+'</div>'
+      +'<div class="ph-title">'+ph.label+'</div>'
+      +'<div class="ph-meta">'+items.filter(function(c){return c.crit==='Critical'}).length+' critical &nbsp;·&nbsp; '+items.filter(function(c){return c.status==='Fail'}).length+' failing</div>'
+      +'</div>'
+      +'<div class="ph-body">';
+    items.sort(function(a,b){return b.risk-a.risk}).forEach(function(c){
+      html+='<div class="rm-item">'
+        +'<div class="rm-left"><div class="rm-id">'+c.id+'</div>'
+        +'<div class="rm-from-to"><div class="mat-segs">'+matSegs(c.mat)+'</div><span class="rm-arr" style="font-size:9px">→L'+(Math.min(c.mat+1,5))+'</span></div></div>'
+        +'<div class="rm-body">'
+        +'<div class="rm-name">'+c.name+'</div>'
+        +'<div class="rm-desc">'+c.remediation+'</div>'
+        +'<div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">'
+        +'<span class="badge '+statusCls(c.status)+'">'+c.status.toUpperCase()+'</span>'
+        +'<span class="badge '+critCls(c.crit)+'">'+c.crit+'</span>'
+        +'<span class="badge '+audCls(c.aud)+'">'+c.aud+'</span>'
+        +'<span class="badge '+typeCls(c.type)+'">'+c.type+'</span>'
+        +'</div></div>'
+        +'<div class="rm-right">'
+        +'<span class="risk-num" style="color:'+riskColor(c.risk)+'">'+c.risk+'<span style="font-size:9px;color:var(--color-text-tertiary)">/25</span></span>'
+        +'<span class="badge '+effortCls(c.effort)+'" style="font-size:9px">'+c.effort+' effort</span>'
+        +'<button class="sbtn" style="font-size:9px;padding:3px 7px" onclick="sendPrompt(\'Detailed remediation steps for '+c.id+' — '+c.name+'\')">Plan ↗</button>'
+        +'</div></div>';
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('rmap-body').innerHTML=html;
+}
+
+render();
+</script>
